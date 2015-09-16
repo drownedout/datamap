@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Test</title>
+	<script src="d3.min.js" charset="utf-8"></script>
+</head>
+<body>
+
+	<script>
+		
+		var scale = d3.scale.linear()
+			.domain([0,100]) //data space
+			.range([0,2000]); //pixel space
+
+		var svg = d3.select("body").append("svg")
+			.attr("width", 250)
+			.attr("height", 250);
+
+		function render(data, color){
+		
+			var rects = svg.selectAll("rect").data(data);
+
+			rects.enter().append("rect")
+				.attr("x", scale)
+				.attr("y", 50)
+				.attr("width",10)
+				.attr("height",10)
+				.attr("fill",color);
+		}
+
+		render([1,2,3],"red");
+		render([1,2,3,4,5],"blue");
+
+	</script>
+
+</body>
+</html>

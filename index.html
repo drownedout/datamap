@@ -1,37 +1,77 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Test</title>
+	<title>San Francisco Weather</title>
+
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="bootstrap.css">
+
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="bootstrap.js"></script>
 	<script src="d3.min.js" charset="utf-8"></script>
+	<script src="http://d3js.org/topojson.v1.min.js"></script>
+
 </head>
 <body>
+<header>
+ <div class="container">
+	 	
+			 	<h1 style="text-align:center; margin-left: -100px; margin-top: 20px;">San Francisco Weather</h1>
+			 	<p style="text-align:center; margin-left: -100px; margin-top: 20px;"> 10 day hourly forecast <p>
+	
+ </div>
+</header>
+	<div class="container">
+		<div class="row">
+		<div class="col-md-8" id="center">
+			<script>
+			var z;
 
-	<script>
-		
-		var scale = d3.scale.linear()
-			.domain([0,100]) //data space
-			.range([0,2000]); //pixel space
+				d3.json("http://api.wunderground.com/api/862aecf70fbf150d/hourly10day/q/CA/San_Francisco.json", function(data) {
+					z = data
 
-		var svg = d3.select("body").append("svg")
-			.attr("width", 250)
-			.attr("height", 250);
+				var width = 700;
+				var height = 500;
+				var svg = d3.select('body').select('svg');
 
-		function render(data, color){
-		
-			var rects = svg.selectAll("rect").data(data);
+				var widthScale = d3.scale.linear()
+					.domain([0,365])
+					.range([0, width]);
 
-			rects.enter().append("rect")
-				.attr("x", scale)
-				.attr("y", 50)
-				.attr("width",10)
-				.attr("height",10)
-				.attr("fill",color);
-		}
+				var heightScale = d3.scale.linear()
+					.domain([0,100])
+					.range([0, height])
 
-		render([1,2,3],"red");
-		render([1,2,3,4,5],"blue");
+				var color = d3.scale.linear()
+					.domain([50, 90])
+					.range(["blue","red"]);
 
-	</script>
+				var canvas = d3.select("div#center")
+					.append("svg")
+					.attr("width",width)
+					.attr("height", height)
+				
+				var bars = canvas.selectAll("rect")
+					.data(data.hourly_forecast)
+					.enter()
+						.append("rect")
+						.attr("width", 1)
+						.attr("height", function(d) { return d.temp.english })
+						.attr("fill", function(d) { return color(d.temp.english) })
+						.attr("x", function(d, i) { return i * (700 / d.FCTTIME.yday) })
+						.attr("y", function(d) { return 200 - d.temp.english });
 
+				var text = svg.selectAll("text")
+					.data(data.hourly_forecast)
+					.enter()
+						.append("text")
+						.text(function(d) { return d.temp.english });
+
+				});
+
+			</script>
+		</div>
+		</div>
+	</div>
 </body>
 </html>
